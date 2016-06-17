@@ -9,7 +9,7 @@ import Data.Char (toLower)
 fixType :: Cat -> String
 fixType (ListCat c) = fixType c +++ "list"
 fixType (TokenCat "Integer") = "int"
-fixType (TokenCat "Double") = "float"
+fixType (TokenCat "Double") = "real"
 fixType cat = let c:cs = show cat in
                 let ls = toLower c : cs in
                   if ls `elem` reservedSML then ls ++ "T" else ls
