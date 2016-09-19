@@ -17,7 +17,9 @@ all = makeTestSuite "Regression tests"
     , issue60
     , issue108, issue110, issue111, issue114, issue113
     , issue127, issue128
-    , issue151 ]
+    , issue151
+    , issue170a, issue170b, issue172
+    ]
 
 issue30 :: Test
 issue30 = makeShellyTest "#30 With -d option XML module is not generated inside the directorty" $
@@ -145,3 +147,36 @@ issue151 = makeShellyTest "#151 Shouldn't print all categories in error message"
                   [ "no production for Baz, appearing in rule"
                   , "    Foo. Bar ::= Baz", "" ]
           assertEqual expectedErr err
+
+issue170a :: Test
+issue170a = makeShellyTest "#170 Module Xml cannot be compiled with GADT backend (--xml)" $
+    withTmpDir $ \tmp -> do
+        cd tmp
+        writefile "Test.cf" $ T.unlines
+            [ "Start. S ::= S \"a\" ;"
+            , "End.   S ::= ;" ]
+        cmd "bnfc" "--haskell-gadt" "--xml" "-m" "Test.cf"
+        cmd "make"
+
+
+issue170b :: Test
+issue170b = makeShellyTest "#170 Module Xml cannot be compiled with GADT backend (--xmlt)" $
+    withTmpDir $ \tmp -> do
+        cd tmp
+        writefile "Test.cf" $ T.unlines
+            [ "Start. S ::= S \"a\" ;"
+            , "End.   S ::= ;" ]
+        cmd "bnfc" "--haskell-gadt" "--xmlt" "-m" "Test.cf"
+        cmd "make"
+
+
+-- |Issue #172
+issue172 :: Test
+issue172 = makeShellyTest "#172 Prefixes not generated correctly in CPP" $
+    withTmpDir $ \tmp -> do
+        cd tmp
+        writefile "Test.cf" $ T.unlines
+            [ "Start. S ::= S \"a\" ;"
+            , "End.   S ::= ;" ]
+        cmd "bnfc" "-m" "--cpp" "-p" "Haskell" "Test.cf"
+        cmd "make"
